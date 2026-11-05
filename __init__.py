@@ -65,9 +65,10 @@ class NetworkClient:
                 time.sleep(0.5)
 
     def handle_json_error(self, response, url):
-        print(f"Server returned non-JSON response ({url}): {response.text}")
         if "<title>Downbooru</title>" in response.text:
             print("** Danbooru is down for maintenance. Retrying in 1 hour. **")
             time.sleep(3600)
-        elif "CF-Ray" in response.headers:
+            return
+        print(f"Server returned non-JSON response ({url}): {response.text}")
+        if "CF-Ray" in response.headers:
             print(f"Cloudflare Ray ID: {response.headers["CF-Ray"]}")
