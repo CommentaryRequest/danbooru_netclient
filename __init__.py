@@ -12,13 +12,14 @@ RETRY_STATUS_CODES = [
 ]
 
 class NetworkClient:
-    def __init__(self, base_url, login, api_key, user_agent):
+    def __init__(self, base_url, login, api_key, user_agent, request_delay):
         self.session = requests.Session()
         self.session.headers = {
             "User-Agent": user_agent
         }
 
         self.base_url = base_url
+        self.request_delay = request_delay
         self.set_auth(login, api_key)
 
     def set_auth(self, login, api_key):
@@ -28,7 +29,7 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.get(f"{self.base_url}/{url}", timeout=10, **kwargs)
-                time.sleep(settings.REQUEST_DELAY)
+                time.sleep(self.request_delay)
                 if response.status_code in (201, 204):
                     return {}, response
                 json_resp = response.json()
@@ -47,7 +48,7 @@ class NetworkClient:
         while True:
             try:
                 response = self.session.put(f"{self.base_url}/{url}", timeout=10, json=data, **kwargs)
-                time.sleep(settings.REQUEST_DELAY)
+                time.sleep(self.request_delay)
                 if response.status_code in (201, 204):
                     return {}, response
                 json_resp = response.json()
